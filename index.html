@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model Viewer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 2L28 9V23L16 30L4 23V9L16 2Z" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <path d="M16 2V16M16 16L28 9M16 16L4 9M16 16V30" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </div>
+                <h1>3D Viewer</h1>
+            </div>
+            
+            <div class="sidebar-section">
+                <h2>Models</h2>
+                <ul class="model-list" id="modelList">
+                    <!-- Models will be populated by JS -->
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h2>Controls</h2>
+                <div class="control-group">
+                    <label>Auto Rotate</label>
+                    <button class="toggle-btn active" id="autoRotateBtn">
+                        <span class="toggle-indicator"></span>
+                    </button>
+                </div>
+                <div class="control-group">
+                    <label>Wireframe</label>
+                    <button class="toggle-btn" id="wireframeBtn">
+                        <span class="toggle-indicator"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section model-info" id="modelInfo">
+                <h2>Model Info</h2>
+                <div class="info-content">
+                    <p><span class="info-label">Name:</span> <span id="infoName">-</span></p>
+                    <p><span class="info-label">Parts:</span> <span id="infoParts">-</span></p>
+                    <p><span class="info-label">Type:</span> <span id="infoType">-</span></p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewer -->
+        <main class="viewer-container">
+            <div class="viewer-header">
+                <h2 id="currentModelTitle">Select a Model</h2>
+                <div class="view-controls">
+                    <button class="view-btn" id="resetViewBtn" title="Reset View">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                    </button>
+                    <button class="view-btn" id="fullscreenBtn" title="Fullscreen">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="canvas-wrapper" id="canvasWrapper">
+                <canvas id="three-canvas"></canvas>
+                <div class="loading-overlay" id="loadingOverlay">
+                    <div class="loader"></div>
+                    <p>Loading model...</p>
+                </div>
+            </div>
+            <div class="viewer-footer">
+                <p>🖱️ Drag to rotate • Scroll to zoom • Right-click drag to pan</p>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
+
