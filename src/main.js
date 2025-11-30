@@ -118,6 +118,24 @@ class ModelViewer {
     }
     
     setupUI() {
+        // Mobile menu toggle
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        
+        const openSidebar = () => {
+            sidebar.classList.add('open');
+            sidebarOverlay.classList.add('visible');
+        };
+        
+        const closeSidebar = () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('visible');
+        };
+        
+        menuToggle.addEventListener('click', openSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+        
         // Populate model list from registry
         const modelList = document.getElementById('modelList');
         const models = getAllModels();
@@ -130,7 +148,11 @@ class ModelViewer {
                 <div class="model-icon">${model.icon}</div>
                 <span class="model-name">${model.name}</span>
             `;
-            li.addEventListener('click', () => this.loadModel(model.id));
+            li.addEventListener('click', () => {
+                this.loadModel(model.id);
+                // Close sidebar on mobile after selection
+                closeSidebar();
+            });
             modelList.appendChild(li);
         });
         

@@ -19,8 +19,11 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
                     <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -67,6 +70,11 @@
         <!-- Main Viewer -->
         <main class="viewer-container">
             <div class="viewer-header">
+                <button class="menu-toggle" id="menuToggle" title="Menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
                 <h2 id="currentModelTitle">Select a Model</h2>
                 <div class="view-controls">
                     <button class="view-btn" id="resetViewBtn" title="Reset View">

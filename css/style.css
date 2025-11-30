@@ -415,18 +415,274 @@ body {
    Responsive
    ============================================ */
 
+/* Mobile Menu Toggle Button */
+.menu-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.menu-toggle:hover {
+    background: var(--bg-elevated);
+    border-color: var(--border-accent);
+}
+
+.menu-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Sidebar Overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    transition: var(--transition-smooth);
+}
+
+.sidebar-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Tablet Portrait */
+@media (max-width: 1024px) {
+    :root {
+        --sidebar-width: 240px;
+    }
+    
+    .sidebar-section {
+        padding: 16px;
+    }
+    
+    .model-list {
+        max-height: 180px;
+    }
+}
+
+/* Mobile & Tablet Landscape */
 @media (max-width: 768px) {
+    :root {
+        --sidebar-width: 260px;
+        --header-height: 50px;
+    }
+    
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .sidebar-overlay {
+        display: block;
+    }
+    
     .sidebar {
         position: fixed;
-        left: -100%;
+        left: 0;
         top: 0;
         bottom: 0;
         z-index: 100;
-        transition: var(--transition-smooth);
+        transform: translateX(-100%);
+        transition: transform var(--transition-smooth);
+        box-shadow: var(--shadow-lg);
     }
     
     .sidebar.open {
-        left: 0;
+        transform: translateX(0);
+    }
+    
+    .sidebar-header {
+        padding: 16px;
+    }
+    
+    .sidebar-header h1 {
+        font-size: 1.1rem;
+    }
+    
+    .sidebar-section {
+        padding: 14px;
+    }
+    
+    .model-list {
+        max-height: 150px;
+        gap: 4px;
+    }
+    
+    .model-item {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+    
+    .model-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+    }
+    
+    .model-name {
+        font-size: 0.85rem;
+    }
+    
+    .viewer-header {
+        padding: 0 16px;
+    }
+    
+    .viewer-header h2 {
+        font-size: 1rem;
+    }
+    
+    .view-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .viewer-footer {
+        padding: 8px 16px;
+    }
+    
+    .viewer-footer p {
+        font-size: 0.7rem;
+    }
+}
+
+/* Mobile Landscape (short height) */
+@media (max-height: 500px) {
+    :root {
+        --header-height: 44px;
+    }
+    
+    .sidebar-header {
+        padding: 12px 14px;
+    }
+    
+    .logo {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .sidebar-header h1 {
+        font-size: 1rem;
+    }
+    
+    .sidebar-section {
+        padding: 10px 14px;
+    }
+    
+    .sidebar-section h2 {
+        margin-bottom: 8px;
+        font-size: 0.65rem;
+    }
+    
+    .model-list {
+        max-height: 120px;
+        gap: 3px;
+    }
+    
+    .model-item {
+        padding: 8px 10px;
+        gap: 8px;
+    }
+    
+    .model-icon {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+    
+    .model-name {
+        font-size: 0.8rem;
+    }
+    
+    .control-group {
+        padding: 4px 0;
+    }
+    
+    .control-group label {
+        font-size: 0.75rem;
+    }
+    
+    .toggle-btn {
+        width: 38px;
+        height: 20px;
+    }
+    
+    .toggle-indicator {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .toggle-btn.active .toggle-indicator {
+        left: 21px;
+    }
+    
+    /* Hide model info on very short screens */
+    .model-info {
+        display: none;
+    }
+    
+    .viewer-header {
+        padding: 0 12px;
+    }
+    
+    .viewer-header h2 {
+        font-size: 0.9rem;
+    }
+    
+    .view-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .view-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Hide footer in landscape */
+    .viewer-footer {
+        display: none;
+    }
+}
+
+/* Small Mobile Portrait */
+@media (max-width: 480px) {
+    :root {
+        --sidebar-width: 85vw;
+    }
+    
+    .viewer-header h2 {
+        font-size: 0.9rem;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+/* Very Small Landscape (phones) */
+@media (max-width: 680px) and (max-height: 400px) {
+    :root {
+        --sidebar-width: 220px;
+    }
+    
+    .sidebar-section:nth-child(3) {
+        /* Hide controls section */
+        display: none;
+    }
+    
+    .model-list {
+        max-height: 100px;
     }
 }
 
