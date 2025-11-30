@@ -1,54 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-// ============================================
-// Model Definitions
-// ============================================
-
-const MODELS = [
-    {
-        id: 'robot',
-        name: 'Robot',
-        icon: '🤖',
-        type: 'Character',
-        description: 'A friendly geometric robot'
-    },
-    {
-        id: 'tank',
-        name: 'Tank',
-        icon: '🛡️',
-        type: 'Vehicle',
-        description: 'Military battle tank'
-    },
-    {
-        id: 'cube',
-        name: 'Cube',
-        icon: '🧊',
-        type: 'Primitive',
-        description: 'Simple cube geometry'
-    },
-    {
-        id: 'sphere',
-        name: 'Sphere',
-        icon: '🔮',
-        type: 'Primitive',
-        description: 'Smooth sphere geometry'
-    },
-    {
-        id: 'pyramid',
-        name: 'Pyramid',
-        icon: '🔺',
-        type: 'Primitive',
-        description: 'Four-sided pyramid'
-    },
-    {
-        id: 'torus',
-        name: 'Torus',
-        icon: '⭕',
-        type: 'Primitive',
-        description: 'Donut-shaped geometry'
-    }
-];
+import { getAllModels, getModelById, createModel } from './models/index.js';
 
 // ============================================
 // Three.js Setup
@@ -68,7 +20,10 @@ class ModelViewer {
         this.animate();
         
         // Load first model
-        this.loadModel('robot');
+        const models = getAllModels();
+        if (models.length > 0) {
+            this.loadModel(models[0].id);
+        }
     }
     
     init() {
@@ -163,9 +118,11 @@ class ModelViewer {
     }
     
     setupUI() {
-        // Populate model list
+        // Populate model list from registry
         const modelList = document.getElementById('modelList');
-        MODELS.forEach(model => {
+        const models = getAllModels();
+        
+        models.forEach(model => {
             const li = document.createElement('li');
             li.className = 'model-item';
             li.dataset.modelId = model.id;
@@ -222,330 +179,28 @@ class ModelViewer {
             item.classList.toggle('active', item.dataset.modelId === modelId);
         });
         
-        const modelData = MODELS.find(m => m.id === modelId);
+        // Get model data from registry
+        const modelData = getModelById(modelId);
+        if (!modelData) return;
+        
         document.getElementById('currentModelTitle').textContent = modelData.name;
         
-        // Create model
-        let model;
-        let partCount = 0;
+        // Create model using registry factory
+        const model = createModel(modelId, this.meshes);
         
-        switch (modelId) {
-            case 'robot':
-                model = this.createRobot();
-                partCount = 10;
-                break;
-            case 'tank':
-                model = this.createTank();
-                partCount = 11;
-                break;
-            case 'cube':
-                model = this.createCube();
-                partCount = 1;
-                break;
-            case 'sphere':
-                model = this.createSphere();
-                partCount = 1;
-                break;
-            case 'pyramid':
-                model = this.createPyramid();
-                partCount = 1;
-                break;
-            case 'torus':
-                model = this.createTorus();
-                partCount = 1;
-                break;
+        if (model) {
+            this.currentModel = model;
+            this.scene.add(model);
+            this.updateWireframe();
+            
+            // Update info panel
+            document.getElementById('infoName').textContent = modelData.name;
+            document.getElementById('infoParts').textContent = modelData.partCount;
+            document.getElementById('infoType').textContent = modelData.type;
         }
-        
-        this.currentModel = model;
-        this.scene.add(model);
-        this.updateWireframe();
-        
-        // Update info panel
-        document.getElementById('infoName').textContent = modelData.name;
-        document.getElementById('infoParts').textContent = partCount;
-        document.getElementById('infoType').textContent = modelData.type;
         
         // Reset camera for this model
         this.controls.target.set(0, 0, 0);
-    }
-    
-    createRobot() {
-        const robot = new THREE.Group();
-        
-        // Colors based on sample image
-        const colors = {
-            head: 0xf5c6a5,
-            neck: 0xf5c6a5,
-            body: 0xe08850,
-            arm: 0xfad5b5,
-            hand: 0xfce5cc,
-            legLeft: 0xf5a060,
-            legRight: 0xf5a060,
-            foot: 0x3d5a7a
-        };
-        
-        // Material factory
-        const createMaterial = (color) => new THREE.MeshStandardMaterial({
-            color: color,
-            roughness: 0.5,
-            metalness: 0.1
-        });
-        
-        // Head
-        const headGeom = new THREE.BoxGeometry(1.4, 1.2, 1);
-        const head = new THREE.Mesh(headGeom, createMaterial(colors.head));
-        head.position.set(0, 2.8, 0);
-        head.castShadow = true;
-        robot.add(head);
-        this.meshes.push(head);
-        
-        // Neck
-        const neckGeom = new THREE.BoxGeometry(0.6, 0.4, 0.5);
-        const neck = new THREE.Mesh(neckGeom, createMaterial(colors.neck));
-        neck.position.set(0, 2.0, 0);
-        neck.castShadow = true;
-        robot.add(neck);
-        this.meshes.push(neck);
-        
-        // Body
-        const bodyGeom = new THREE.BoxGeometry(2.4, 2.2, 1.2);
-        const body = new THREE.Mesh(bodyGeom, createMaterial(colors.body));
-        body.position.set(0, 0.7, 0);
-        body.castShadow = true;
-        robot.add(body);
-        this.meshes.push(body);
-        
-        // Left arm
-        const armGeom = new THREE.BoxGeometry(0.8, 0.6, 0.5);
-        const leftArm = new THREE.Mesh(armGeom, createMaterial(colors.arm));
-        leftArm.position.set(-1.8, 1.0, 0);
-        leftArm.castShadow = true;
-        robot.add(leftArm);
-        this.meshes.push(leftArm);
-        
-        // Right arm
-        const rightArm = new THREE.Mesh(armGeom, createMaterial(colors.arm));
-        rightArm.position.set(1.8, 1.0, 0);
-        rightArm.castShadow = true;
-        robot.add(rightArm);
-        this.meshes.push(rightArm);
-        
-        // Left hand
-        const handGeom = new THREE.BoxGeometry(0.5, 0.5, 0.4);
-        const leftHand = new THREE.Mesh(handGeom, createMaterial(colors.hand));
-        leftHand.position.set(-2.45, 1.0, 0);
-        leftHand.castShadow = true;
-        robot.add(leftHand);
-        this.meshes.push(leftHand);
-        
-        // Right hand
-        const rightHand = new THREE.Mesh(handGeom, createMaterial(colors.hand));
-        rightHand.position.set(2.45, 1.0, 0);
-        rightHand.castShadow = true;
-        robot.add(rightHand);
-        this.meshes.push(rightHand);
-        
-        // Left leg
-        const legGeom = new THREE.BoxGeometry(0.9, 1.8, 0.7);
-        const leftLeg = new THREE.Mesh(legGeom, createMaterial(colors.legLeft));
-        leftLeg.position.set(-0.55, -1.2, 0);
-        leftLeg.castShadow = true;
-        robot.add(leftLeg);
-        this.meshes.push(leftLeg);
-        
-        // Right leg
-        const rightLeg = new THREE.Mesh(legGeom, createMaterial(colors.legRight));
-        rightLeg.position.set(0.55, -1.2, 0);
-        rightLeg.castShadow = true;
-        robot.add(rightLeg);
-        this.meshes.push(rightLeg);
-        
-        // Left foot
-        const footGeom = new THREE.BoxGeometry(1.0, 0.4, 0.8);
-        const leftFoot = new THREE.Mesh(footGeom, createMaterial(colors.foot));
-        leftFoot.position.set(-0.55, -2.3, 0);
-        leftFoot.castShadow = true;
-        robot.add(leftFoot);
-        this.meshes.push(leftFoot);
-        
-        // Right foot
-        const rightFoot = new THREE.Mesh(footGeom, createMaterial(colors.foot));
-        rightFoot.position.set(0.55, -2.3, 0);
-        rightFoot.castShadow = true;
-        robot.add(rightFoot);
-        this.meshes.push(rightFoot);
-        
-        // Center the robot
-        robot.position.y = 0.5;
-        
-        return robot;
-    }
-    
-    createTank() {
-        const tank = new THREE.Group();
-        
-        // Colors - military green theme
-        const colors = {
-            body: 0x4abe4a,
-            turret: 0x3da63d,
-            barrel: 0x3da63d,
-            wheel: 0x2a2a2a
-        };
-        
-        // Material factory
-        const createMaterial = (color) => new THREE.MeshStandardMaterial({
-            color: color,
-            roughness: 0.6,
-            metalness: 0.3
-        });
-        
-        const wheelMaterial = new THREE.MeshStandardMaterial({
-            color: colors.wheel,
-            roughness: 0.8,
-            metalness: 0.2
-        });
-        
-        // Main body
-        const bodyGeom = new THREE.BoxGeometry(3.5, 1.4, 2.2);
-        const body = new THREE.Mesh(bodyGeom, createMaterial(colors.body));
-        body.position.set(0, 0.5, 0);
-        body.castShadow = true;
-        tank.add(body);
-        this.meshes.push(body);
-        
-        // Turret base
-        const turretBaseGeom = new THREE.BoxGeometry(1.6, 0.8, 1.4);
-        const turretBase = new THREE.Mesh(turretBaseGeom, createMaterial(colors.turret));
-        turretBase.position.set(0.2, 1.6, 0);
-        turretBase.castShadow = true;
-        tank.add(turretBase);
-        this.meshes.push(turretBase);
-        
-        // Turret top
-        const turretTopGeom = new THREE.BoxGeometry(0.8, 0.4, 0.6);
-        const turretTop = new THREE.Mesh(turretTopGeom, createMaterial(colors.turret));
-        turretTop.position.set(0.2, 2.2, 0);
-        turretTop.castShadow = true;
-        tank.add(turretTop);
-        this.meshes.push(turretTop);
-        
-        // Gun barrel
-        const barrelGeom = new THREE.BoxGeometry(3, 0.25, 0.25);
-        const barrel = new THREE.Mesh(barrelGeom, createMaterial(colors.barrel));
-        barrel.position.set(-1.8, 1.6, 0);
-        barrel.castShadow = true;
-        tank.add(barrel);
-        this.meshes.push(barrel);
-        
-        // Machine gun mount (vertical post)
-        const mgMountGeom = new THREE.BoxGeometry(0.15, 0.5, 0.15);
-        const mgMount = new THREE.Mesh(mgMountGeom, createMaterial(colors.turret));
-        mgMount.position.set(0.2, 2.65, 0);
-        mgMount.castShadow = true;
-        tank.add(mgMount);
-        this.meshes.push(mgMount);
-        
-        // Machine gun barrel (angled)
-        const mgBarrelGeom = new THREE.BoxGeometry(1.0, 0.1, 0.1);
-        const mgBarrel = new THREE.Mesh(mgBarrelGeom, createMaterial(colors.barrel));
-        mgBarrel.position.set(-0.3, 2.85, 0);
-        mgBarrel.rotation.z = -0.15; // slight angle
-        mgBarrel.castShadow = true;
-        tank.add(mgBarrel);
-        this.meshes.push(mgBarrel);
-        
-        // Wheels (4 wheels)
-        const wheelGeom = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 16);
-        const wheelPositions = [
-            { x: -1.2, z: 1.1 },
-            { x: 1.2, z: 1.1 },
-            { x: -1.2, z: -1.1 },
-            { x: 1.2, z: -1.1 }
-        ];
-        
-        wheelPositions.forEach(pos => {
-            const wheel = new THREE.Mesh(wheelGeom, wheelMaterial);
-            wheel.rotation.x = Math.PI / 2;
-            wheel.position.set(pos.x, -0.3, pos.z);
-            wheel.castShadow = true;
-            tank.add(wheel);
-            this.meshes.push(wheel);
-        });
-        
-        // Track/fender (side panels)
-        const fenderGeom = new THREE.BoxGeometry(3.8, 0.15, 0.1);
-        const fenderMaterial = createMaterial(colors.body);
-        
-        const leftFender = new THREE.Mesh(fenderGeom, fenderMaterial);
-        leftFender.position.set(0, 0.1, 1.2);
-        leftFender.castShadow = true;
-        tank.add(leftFender);
-        this.meshes.push(leftFender);
-        
-        const rightFender = new THREE.Mesh(fenderGeom, fenderMaterial);
-        rightFender.position.set(0, 0.1, -1.2);
-        rightFender.castShadow = true;
-        tank.add(rightFender);
-        this.meshes.push(rightFender);
-        
-        // Position tank
-        tank.position.y = 0.3;
-        
-        return tank;
-    }
-    
-    createCube() {
-        const geometry = new THREE.BoxGeometry(2, 2, 2);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xe67e22,
-            roughness: 0.4,
-            metalness: 0.2
-        });
-        const cube = new THREE.Mesh(geometry, material);
-        cube.castShadow = true;
-        this.meshes.push(cube);
-        return cube;
-    }
-    
-    createSphere() {
-        const geometry = new THREE.SphereGeometry(1.2, 64, 64);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x3498db,
-            roughness: 0.2,
-            metalness: 0.5
-        });
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.castShadow = true;
-        this.meshes.push(sphere);
-        return sphere;
-    }
-    
-    createPyramid() {
-        const geometry = new THREE.ConeGeometry(1.5, 2.5, 4);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0xf1c40f,
-            roughness: 0.3,
-            metalness: 0.3
-        });
-        const pyramid = new THREE.Mesh(geometry, material);
-        pyramid.rotation.y = Math.PI / 4;
-        pyramid.castShadow = true;
-        this.meshes.push(pyramid);
-        return pyramid;
-    }
-    
-    createTorus() {
-        const geometry = new THREE.TorusGeometry(1, 0.4, 32, 100);
-        const material = new THREE.MeshStandardMaterial({
-            color: 0x9b59b6,
-            roughness: 0.2,
-            metalness: 0.6
-        });
-        const torus = new THREE.Mesh(geometry, material);
-        torus.rotation.x = Math.PI / 4;
-        torus.castShadow = true;
-        this.meshes.push(torus);
-        return torus;
     }
     
     updateWireframe() {
@@ -578,4 +233,3 @@ class ModelViewer {
 document.addEventListener('DOMContentLoaded', () => {
     new ModelViewer();
 });
-
