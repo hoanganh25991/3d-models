@@ -10,12 +10,14 @@ import { sphereModel } from './sphere.js';
 import { pyramidModel } from './pyramid.js';
 import { torusModel } from './torus.js';
 import { dogModel } from './dog.js';
+import { gunModel } from './gun.js';
 
 // Register all models here
 const models = [
     dogModel,
     robotModel,
     tankModel,
+    gunModel,
     cubeModel,
     sphereModel,
     pyramidModel,
@@ -72,5 +74,5 @@ export function createModel(id, meshes) {
 }
 
 // Export individual models for direct import if needed
-export { robotModel, tankModel, cubeModel, sphereModel, pyramidModel, torusModel, dogModel };
+export { robotModel, tankModel, cubeModel, sphereModel, pyramidModel, torusModel, dogModel, gunModel };
 
