@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export const gunModel = {
     id: 'gun',
-    name: 'AK-47 Toy Gun',
+    name: 'AK-47',
     icon: '🔫',
     type: 'Weapon',
     description: 'A black plastic toy AK-47 style rifle',
