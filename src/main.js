@@ -14,6 +14,7 @@ class ModelViewer {
         this.autoRotate = true;
         this.wireframe = false;
         this.meshes = [];
+        this.backgroundColor = 0x0d0d0f;
         
         this.init();
         this.setupUI();
@@ -39,7 +40,7 @@ class ModelViewer {
         this.renderer = new THREE.WebGLRenderer({
             canvas: this.canvas,
             antialias: true,
-            alpha: true
+            alpha: false
         });
         this.renderer.setSize(this.canvasWrapper.clientWidth, this.canvasWrapper.clientHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -47,6 +48,9 @@ class ModelViewer {
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.2;
+        
+        // Set initial background
+        this.scene.background = new THREE.Color(this.backgroundColor);
         
         // Controls
         this.controls = new OrbitControls(this.camera, this.canvas);
@@ -187,6 +191,26 @@ class ModelViewer {
                 this.canvasWrapper.requestFullscreen();
             }
         });
+        
+        // Background color picker
+        const backgroundColorPicker = document.getElementById('backgroundColorPicker');
+        const colorPresets = document.querySelectorAll('.color-preset');
+        
+        backgroundColorPicker.addEventListener('input', (e) => {
+            const color = e.target.value;
+            this.setBackgroundColor(color);
+            this.updateColorPresets(color);
+        });
+        
+        // Color presets
+        colorPresets.forEach(preset => {
+            preset.addEventListener('click', () => {
+                const color = preset.dataset.color;
+                backgroundColorPicker.value = color;
+                this.setBackgroundColor(color);
+                this.updateColorPresets(color);
+            });
+        });
     }
     
     loadModel(modelId) {
@@ -230,6 +254,21 @@ class ModelViewer {
             if (mesh.material) {
                 mesh.material.wireframe = this.wireframe;
             }
+        });
+    }
+    
+    setBackgroundColor(color) {
+        // Convert hex string to number
+        this.backgroundColor = parseInt(color.replace('#', ''), 16);
+        this.scene.background = new THREE.Color(this.backgroundColor);
+        
+        // Update canvas wrapper background for consistency
+        this.canvasWrapper.style.backgroundColor = color;
+    }
+    
+    updateColorPresets(activeColor) {
+        document.querySelectorAll('.color-preset').forEach(preset => {
+            preset.classList.toggle('active', preset.dataset.color === activeColor);
         });
     }
     
